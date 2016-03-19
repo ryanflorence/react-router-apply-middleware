@@ -19,6 +19,7 @@ const FooRootContainer = React.createClass({
     return render(props)
   },
   // and so all RootContainers need to implement this as a default prop
+  // so they can be the final middleware
   getDefaultProps() {
     return { render: (renderProps) => <RouterContext {...renderProps}/> }
   }
@@ -33,7 +34,8 @@ const FooContainer = React.createClass({
     // all Containers need to render with the `createElement` prop
     return createElement(Component, mergedProps)
   },
-  // and so all Containers need to implement a default prop
+  // and so all Containers need to implement a default prop so they can be
+  // the final middleware
   getDefaultProps() {
     return { createElement: (Component, props) => <Component {...props} /> }
   }
@@ -163,4 +165,8 @@ describe('applyMiddleware', () => {
       done()
     })
   })
+
+  // I think this will fail right now, but I'm out of time today...
+  it('applies middleware that only has `getContainer`')
+
 })
