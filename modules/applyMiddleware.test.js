@@ -98,17 +98,17 @@ const useBaz = (bazInjected) => ({
   )
 })
 
-describe('applyMiddleware', () => {
+const run = ({ renderWithMiddleware, Component }, assertion) => {
+  const div = document.createElement('div')
+  const routes = <Route path="/" component={Component}/>
+  render(<Router
+    render={renderWithMiddleware}
+    routes={routes}
+    history={createMemoryHistory('/')}
+  />, div, () => assertion(div.innerHTML))
+}
 
-  const run = ({ renderWithMiddleware, Component }, assertion) => {
-    const div = document.createElement('div')
-    const routes = <Route path="/" component={Component}/>
-    render(<Router
-      render={renderWithMiddleware}
-      routes={routes}
-      history={createMemoryHistory('/')}
-    />, div, () => assertion(div.innerHTML))
-  }
+describe('applyMiddleware', () => {
 
   it('applies one middleware', (done) => {
     run({
