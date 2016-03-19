@@ -3,7 +3,7 @@
 import expect from 'expect'
 import React from 'react'
 import { render } from 'react-dom'
-import { Router, Route, RouterContext, createMemoryHistory } from 'react-router'
+import { Router, Route, createMemoryHistory } from 'react-router'
 import applyMiddleware from './applyMiddleware'
 
 const FOO_ROOT_CONTAINER_TEXT = 'FOO ROOT CONTAINER'
@@ -11,33 +11,33 @@ const BAR_ROOT_CONTAINER_TEXT = 'BAR ROOT CONTAINER'
 const BAZ_CONTAINER_TEXT = 'BAZ INJECTED'
 
 const FooRootContainer = React.createClass({
+  propTypes: {
+    // 1. applyMiddleware is going to pass a render prop
+    render: React.PropTypes.func
+  },
   childContextTypes: { foo: React.PropTypes.string },
   getChildContext() { return { foo: FOO_ROOT_CONTAINER_TEXT } },
-  // all RootContainers need to render with the `render` prop
   render() {
+    // 2. all RootContainers need to render with the `render` prop and send
+    //    along the bag of props it got (they came from Router)
     const { render, ...props } = this.props
     return render(props)
-  },
-  // and so all RootContainers need to implement this as a default prop
-  // so they can be the final middleware
-  getDefaultProps() {
-    return { render: (renderProps) => <RouterContext {...renderProps}/> }
   }
 })
 
 const FooContainer = React.createClass({
+  propTypes: {
+    // 1. applyMiddleware is going to pass a createElement prop
+    createElement: React.PropTypes.func
+  },
   contextTypes: { foo: React.PropTypes.string.isRequired },
   render() {
     const { createElement, Component, routerProps } = this.props
     const fooFromContext = this.context.foo
     const mergedProps = { ...routerProps, fooFromContext }
-    // all Containers need to render with the `createElement` prop
+    // 2. So all Containers need to render with the `createElement` prop, passing
+    //    along the Component to be rendered and the props to render with
     return createElement(Component, mergedProps)
-  },
-  // and so all Containers need to implement a default prop so they can be
-  // the final middleware
-  getDefaultProps() {
-    return { createElement: (Component, props) => <Component {...props} /> }
   }
 })
 
@@ -59,9 +59,6 @@ const BarRootContainer = React.createClass({
   render() {
     const { render, ...props } = this.props
     return render(props)
-  },
-  getDefaultProps() {
-    return { render: (renderProps) => <RouterContext {...renderProps}/> }
   }
 })
 
@@ -72,9 +69,6 @@ const BarContainer = React.createClass({
     const barFromContext = this.context.bar
     const mergedProps = { ...routerProps, barFromContext }
     return createElement(Component, mergedProps)
-  },
-  getDefaultProps() {
-    return { createElement: (Component, props) => <Component {...props} /> }
   }
 })
 
@@ -95,9 +89,6 @@ const BazContainer = React.createClass({
     const { createElement, Component, routerProps, bazInjected } = this.props
     const mergedProps = { ...routerProps, bazInjected }
     return createElement(Component, mergedProps)
-  },
-  getDefaultProps() {
-    return { createElement: (Component, props) => <Component {...props} /> }
   }
 })
 
@@ -166,7 +157,18 @@ describe('applyMiddleware', () => {
     })
   })
 
-  // I think this will fail right now, but I'm out of time today...
-  it('applies middleware that only has `getContainer`')
+  it('applies middleware that only has `getContainer`', (done) => {
+    run({
+      renderWithMiddleware: applyMiddleware(
+        useBaz(BAZ_CONTAINER_TEXT)
+      ),
+      Component: (props) => (
+        <div>{props.bazInjected}</div>
+      )
+    }, (html) => {
+      expect(html).toContain(BAZ_CONTAINER_TEXT)
+      done()
+    })
+  })
 
 })

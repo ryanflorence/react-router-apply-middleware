@@ -1,27 +1,35 @@
 import { cloneElement } from 'react'
+import React from 'react'
+import RouterContext from 'react-router/lib/RouterContext'
 
 const applyMiddleware = (...middleware) => {
   // middleware looks like: { renderContainer, renderRootContainer }
   const withRootContainer = middleware.filter(m => m.renderRootContainer)
   const withContainer = middleware.filter(m => m.renderContainer)
 
+  const finalCreateElement = (Component, props) => <Component {...props}/>
+
   const createElement = withContainer.reduceRight((previous, { renderContainer }) => (
-    (RouteComponent, props) => {
-      const element = renderContainer(RouteComponent, props)
-      return previous ? cloneElement(element, { createElement: previous }) : element
-    }
-  ), null)
+    (RouteComponent, props) => (
+      cloneElement(
+        renderContainer(RouteComponent, props),
+        { createElement: previous }
+      )
+    )
+  ), finalCreateElement)
+
+  const finalRenderRootContainer = (renderProps) => (
+    <RouterContext {...renderProps} createElement={createElement}/>
+  )
 
   return withRootContainer.reduceRight((previous, { renderRootContainer }) => (
-    (renderProps) => {
-      const element = renderRootContainer(renderProps)
-      return previous ? (
-        cloneElement(element, { render: previous })
-      ) : (
-        cloneElement(element, { createElement })
+    (renderProps) => (
+      cloneElement(
+        renderRootContainer(renderProps),
+        { render: previous }
       )
-    }
-  ), null)
+    )
+  ), finalRenderRootContainer)
 }
 
 export default applyMiddleware
