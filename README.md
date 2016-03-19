@@ -33,3 +33,15 @@ For now you'll have to look at the tests, it's a little bit tricky. As
 soon as the middleware libs I'm working on are updated, I'll come add
 some notes here about how to do it.
 
+Hopefully we'll end up with stuff like:
+
+```js
+useRelay(rootId)
+useAlt()
+useTransit()
+useGroundControl(store)
+useScrollBehavior()
+```
+
+etc.
+
