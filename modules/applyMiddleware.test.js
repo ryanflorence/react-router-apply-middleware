@@ -42,15 +42,14 @@ const FooContainer = React.createClass({
 })
 
 const useFoo = () => ({
-  renderRootContainer: (renderProps) => {
-    // renderProps comes in from ReactRouter before rendering a RouterContext
-    return <FooRootContainer {...renderProps}/>
-  },
-  renderContainer: (Component, props) => {
-    // Component, props come from React Router `createElement` prop just before
-    // it creates elements to render
-    return <FooContainer Component={Component} routerProps={props}/>
-  }
+  renderRootContainer: (renderProps) => (
+    // same signature as Router.props.render
+    <FooRootContainer {...renderProps}/>
+  ),
+  renderContainer: (Component, props) => (
+    // same signature as Router.props.createElement
+    <FooContainer Component={Component} routerProps={props}/>
+  )
 })
 
 const BarRootContainer = React.createClass({
@@ -73,15 +72,12 @@ const BarContainer = React.createClass({
 })
 
 const useBar = () => ({
-  renderRootContainer: (renderProps) => {
-    // renderProps comes in from ReactRouter before rendering a RouterContext
-    return <BarRootContainer {...renderProps}/>
-  },
-  renderContainer: (Component, props) => {
-    // Component, props come from React Router `createElement` prop just before
-    // it creates elements to render
-    return <BarContainer Component={Component} routerProps={props}/>
-  }
+  renderRootContainer: (renderProps) => (
+    <BarRootContainer {...renderProps}/>
+  ),
+  renderContainer: (Component, props) => (
+    <BarContainer Component={Component} routerProps={props}/>
+  )
 })
 
 const BazContainer = React.createClass({
