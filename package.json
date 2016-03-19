@@ -1,6 +1,6 @@
 {
   "name": "react-router-apply-middleware",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Composable middleware for React Router",
   "main": "lib/applyMiddleware.js",
   "repository": {
@@ -10,8 +10,8 @@
   "bugs": "https://github.com/ryanflorence/react-router-apply-middleware/issues",
   "scripts": {
     "build": "babel ./modules -d lib --ignore '__tests__'",
-    "build-umd": "NODE_ENV=production webpack modules/ReactRouterApplyMiddleware.js umd/ReactRouterApplyMiddleware.js",
-    "build-min": "NODE_ENV=production webpack -p modules/ReactRouterApplyMiddleware.js umd/ReactRouterApplyMiddleware.min.js",
+    "build-umd": "NODE_ENV=production webpack modules/applyMiddleware.js umd/ReactRouterApplyMiddleware.js",
+    "build-min": "NODE_ENV=production webpack -p modules/applyMiddleware.js umd/ReactRouterApplyMiddleware.min.js",
     "lint": "eslint modules",
     "start": "babel-node example/server.js",
     "test": "npm run lint && karma start",
