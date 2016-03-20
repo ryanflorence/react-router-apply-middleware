@@ -6,6 +6,44 @@ import { render } from 'react-dom'
 import { Router, Route, createMemoryHistory } from 'react-router'
 import applyMiddleware from './applyMiddleware'
 
+/*
+`applyMiddleware` turns this:
+
+```js
+const render = applyMiddleware(
+  useAsyncProps({ loadContext: { token } }),
+  useNamedRoutes(),
+  useRelativeLinks()
+)
+```
+
+into this:
+
+```js
+<Router
+  render={(props) => (
+    <AsyncProps {...props}
+      render={(props) => (
+        <NamedRoutes {...props}
+          render={(props) => (
+            <RelativeLinks {...props}
+              createElement={(Component, props) => (
+                <AsyncPropsContainer Component={Component} routerProps={props} token={token}
+                  createElement={(Component, props) => (
+                    <RelativeLinksContainer Component={Component} routerProps={props}/>
+                  )}
+                />
+              )}
+            />
+          )}
+        />
+      )}
+    />
+  )}
+/>
+```
+*/
+
 const FOO_ROOT_CONTAINER_TEXT = 'FOO ROOT CONTAINER'
 const BAR_ROOT_CONTAINER_TEXT = 'BAR ROOT CONTAINER'
 const BAZ_CONTAINER_TEXT = 'BAZ INJECTED'
