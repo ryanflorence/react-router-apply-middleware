@@ -1,5 +1,4 @@
-import { cloneElement } from 'react'
-import React from 'react'
+import React, { cloneElement } from 'react'
 import RouterContext from 'react-router/lib/RouterContext'
 
 export default (...middleware) => (
