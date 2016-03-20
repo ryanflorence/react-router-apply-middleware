@@ -1,7 +1,9 @@
 # React Router Apply Middleware
 
-This is a WIP with only a couple hours put into the code, but I think it
-works, give it a shot, send some pull requests if you run into issues.
+Compose behavior in the render lifecycle of React Router apps.
+
+A name other than "middleware" would be awesome, I just can't think of
+one. Please suggest.
 
 ## Installation
 
