@@ -1,7 +1,7 @@
 /*eslint-env mocha*/
 /*eslint no-console: 0*/
 import expect from 'expect'
-import React from 'react'
+import React, { cloneElement } from 'react'
 import { render } from 'react-dom'
 import { Router, Route, createMemoryHistory } from 'react-router'
 import applyMiddleware from './applyMiddleware'
@@ -49,90 +49,73 @@ const BAR_ROOT_CONTAINER_TEXT = 'BAR ROOT CONTAINER'
 const BAZ_CONTAINER_TEXT = 'BAZ INJECTED'
 
 const FooRootContainer = React.createClass({
-  propTypes: {
-    // 1. applyMiddleware is going to pass a render prop
-    render: React.PropTypes.func
-  },
+  propTypes: { children: React.PropTypes.node.isRequired },
   childContextTypes: { foo: React.PropTypes.string },
   getChildContext() { return { foo: FOO_ROOT_CONTAINER_TEXT } },
   render() {
-    // 2. all RootContainers need to render with the `render` prop and send
-    //    along the bag of props it got (they came from Router)
-    const { render, ...props } = this.props
-    return render(props)
+    return this.props.children
   }
 })
 
 const FooContainer = React.createClass({
-  propTypes: {
-    // 1. applyMiddleware is going to pass a createElement prop
-    createElement: React.PropTypes.func
-  },
+  propTypes: { children: React.PropTypes.node.isRequired },
   contextTypes: { foo: React.PropTypes.string.isRequired },
   render() {
-    const { createElement, Component, routerProps } = this.props
+    const { children, ...props } = this.props
     const fooFromContext = this.context.foo
-    const mergedProps = { ...routerProps, fooFromContext }
-    // 2. So all Containers need to render with the `createElement` prop, passing
-    //    along the Component to be rendered and the props to render with
-    return createElement(Component, mergedProps)
+    return cloneElement(children, { ...props, fooFromContext })
   }
 })
 
 const useFoo = () => ({
-  renderRootContainer: (renderProps) => (
-    // same signature as Router.props.render
-    <FooRootContainer {...renderProps}/>
+  renderRootContainer: (child) => (
+    <FooRootContainer>{child}</FooRootContainer>
   ),
-  renderContainer: (Component, props) => (
-    // same signature as Router.props.createElement
-    <FooContainer Component={Component} routerProps={props}/>
+  renderContainer: (child) => (
+    <FooContainer>{child}</FooContainer>
   )
 })
 
 const BarRootContainer = React.createClass({
+  propTypes: { children: React.PropTypes.node.isRequired },
   childContextTypes: { bar: React.PropTypes.string },
   getChildContext() { return { bar: BAR_ROOT_CONTAINER_TEXT } },
   render() {
-    const { render, ...props } = this.props
-    return render(props)
+    return this.props.children
   }
 })
 
 const BarContainer = React.createClass({
+  propTypes: { children: React.PropTypes.node.isRequired },
   contextTypes: { bar: React.PropTypes.string.isRequired },
   render() {
-    const { createElement, Component, routerProps } = this.props
+    const { children, ...props } = this.props
     const barFromContext = this.context.bar
-    const mergedProps = { ...routerProps, barFromContext }
-    return createElement(Component, mergedProps)
+    return cloneElement(children, { props, barFromContext })
   }
 })
 
 const useBar = () => ({
-  renderRootContainer: (renderProps) => (
-    <BarRootContainer {...renderProps}/>
+  renderRootContainer: (child) => (
+    <BarRootContainer>{child}</BarRootContainer>
   ),
-  renderContainer: (Component, props) => (
-    <BarContainer Component={Component} routerProps={props}/>
+  renderContainer: (child) => (
+    <BarContainer>{child}</BarContainer>
   )
 })
 
 const BazContainer = React.createClass({
   render() {
-    const { createElement, Component, routerProps, bazInjected } = this.props
-    const mergedProps = { ...routerProps, bazInjected }
-    return createElement(Component, mergedProps)
+    const { children, ...props } = this.props
+    return cloneElement(children, props)
   }
 })
 
 const useBaz = (bazInjected) => ({
-  renderContainer: (Component, props) => (
-    <BazContainer
-      Component={Component}
-      routerProps={props}
-      bazInjected={bazInjected}
-    />
+  renderContainer: (child) => (
+    <BazContainer bazInjected={bazInjected}>
+      {child}
+    </BazContainer>
   )
 })
 
